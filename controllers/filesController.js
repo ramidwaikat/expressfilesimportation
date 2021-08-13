@@ -1,4 +1,3 @@
-const Files = require("../models/filesModel");
 const filesModel = require("../models/filesModel");
 
 exports.getAllFiles = async (req, res, next) => {
@@ -14,15 +13,13 @@ exports.getAllFiles = async (req, res, next) => {
 };
 exports.postFile = async (req, res, next) => {
   try {
-    // console.log(req.body.item);
     const postResponse = await filesModel.post(req.body);
     res.status(201).json(postResponse);
- // res.status(201).json(req.body);
   } catch (err) {
     console.log(err);
-    if (!err.statusCode) { 
+    if (!err.statusCode) {
       err.statusCode = 500;
     }
     next(err);
-  } 
+  }
 };
