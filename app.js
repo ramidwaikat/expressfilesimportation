@@ -3,14 +3,13 @@ const xss = require("xss-clean");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const app = express();
-const mysql = require('mysql2');
-var bodyParser = require('body-parser');
+const mysql = require("mysql2");
+var bodyParser = require("body-parser");
 const methodOverride = require("method-override");
 const filesRouter = require("./routes/filesRouter");
 // const bp = require('body-parser');
 
 // const globalErrorHandler = require('./controllers/errorController');
- 
 
 // MIDDLEWARES
 
@@ -21,11 +20,11 @@ app.use(express.urlencoded({ extended: false }));
 // app.use(xss());
 
 // Set security HTTP headers
-// app.use(helmet()); 
+// app.use(helmet());
 
 // Limit requests from same API
 // const limiter = rateLimit({
-//     max: 100, 
+//     max: 100,
 //     windowMs: 60 * 60 * 1000,
 //     message: 'Too many requests from this IP, please try again in an hour!'
 //   });
@@ -37,61 +36,70 @@ app.use(express.urlencoded({ extended: false }));
 // Serving static files
 //app.use(express.static(`${__dirname}`));
 
-
-
- 
-
-
-
 var con = mysql.createConnection({
-  host:'localhost',
-	user:'root', 
-	password:'123456',
-	database:'filesimportation'
+  host: "localhost",
+  user: "root",
+  password: "123456",
+  database: "filesimportation",
 });
 
- 
-// parse application/json
-//app.use(bodyParser.json());
-  
-// app.use(function (req, res) {
-//   res.setHeader('Content-Type', 'text/plain')
-//   res.write('you posted:\n');
-//     res.write( JSON.stringify(req.body, null, 2));
-//   res.end(JSON.stringify(req.body, null, 2));
+// Solve Access-Control-Allow-Origin, there are libraries may used, but i think this enough for now
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
 
-// });
+app.use("/", filesRouter);
 
-//  app.use((req ,res ,next)=>{
-// 	 res.setHeader('Access-Control-Allow-Origin', '*'); 
-// 	 res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE'); 
-// 	 res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); 
-// 	 next();
-//  })
- // parsing body request
-// app.use(express.json())
-// app.use(express.urlencoded({ extended: true }))
-// app.use(methodOverride("_method"))
+// How I will  handle data diversity?
 
-// create application/x-www-form-urlencoded parser
-//var urlencodedParser = express.urlencoded({ extended: false })
- 
+// Problem
 
- app.use("/", filesRouter); 
+// No fixed schemas
+// No fixed columns
+// No fixed ordering of columns
+// No fixed columns names
 
- const port = process.env.PORT || 3002;
+// Ideas for SOLUTION, I think there are more than way. this is one of them
+// DATA ANALYSIS TO RECOGNIZE
+
+// data analysis will go through steps
+// 1) Looking for explicit column names (ex. firstName, LastName, Gender, Sex, Address, City ...)
+// 2) Recognize columns not passed step 1
+//		- date must have numbers, at least the year
+//		-	TOP possible formats
+//		-		10/08/2021 UK, 08/10/2021 US , 2021/08/2021
+//		-		1st Jun 2021 
+//		-	any columns without numbers will not consider as a date column
+//		-
+//		-
+//		-
+//		-
+//		-
+//		-
+//		-
+//		-
+//		-
+//		-
+//		-
+//		-
+//		-
+//		-
+//		-
+//		-
+//		-
+//		-
+// Save data imported from csv files. Why? logging, start analyzing data from this point
+const port = process.env.PORT || 3002;
 
 app.listen(port, () => {
-//  console.log("server started ...");
+  console.log("server started ...");
 });
-
-
-
 
 // app.all("*", (req, res, next) => {
 //   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 // });
 
-
 module.exports = app;
- 

@@ -5,9 +5,17 @@ module.exports = class Files {
     return db.execute("SELECT  * from  uploadedfiles");
   }
 
-  static post(item){
-  const sql = "INSERT INTO uploadedfiles  VALUES ('"+ item.uploadedFilesPk +"' ,'"+ item.fileName +"','"+ item.status +"'  ,'"+ item.hospitalCode +"'  )"
-    return db.execute(sql ) ; 
-    
+  static post(item) {
+    const sql =
+      "INSERT INTO uploadedfiles  VALUES ('" +
+      item.uploadedFilesPk +
+      "' ,'" +
+      item.fileName +
+      "','" +
+      item.status +
+      "'  ,'" +
+      item.hospitalCode +
+      "'  )";
+    return db.execute(sql);
   }
-};  
+};
