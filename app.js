@@ -2,45 +2,39 @@ const express = require("express");
 const xss = require("xss-clean");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-const app = express();
-const mysql = require("mysql2");
-var bodyParser = require("body-parser");
-const methodOverride = require("method-override");
+// const mysql = require("mysql2");
+// var bodyParser = require("body-parser");
+// const methodOverride = require("method-override");
 const filesRouter = require("./routes/filesRouter");
 const rawDataRouter = require("./routes/rawDataRouter");
- 
+const AppError = require('./utils/appError');
+
+ const app = express();
 // const globalErrorHandler = require('./controllers/errorController');
 
 // MIDDLEWARES
 
+// 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// // Data sanitization against Cross Site Scripting (XSS)
-// app.use(xss());
+// Data sanitization against Cross Site Scripting (XSS)
+app.use(xss());
 
-// //Set security HTTP headers
-// app.use(helmet());
+//Set security HTTP headers
+app.use(helmet());
 
-// Limit requests from same API
-// const limiter = rateLimit({
-//     max: 100,
-//     windowMs: 60 * 60 * 1000,
-//     message: 'Too many requests from this IP, please try again in an hour!'
-//   });
-//   app.use('/', limiter);
+//Limit requests from same API
+const limiter = rateLimit({
+    max: 100,
+    windowMs: 60 * 60 * 1000,
+    message: 'Too many requests from this IP, please try again in an hour!'
+  });
+  app.use('/', limiter);
+
 
  
- 
- 
-// var con = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: "123456",
-//   database: "filesimportation",
-// });
-
-// Solve Access-Control-Allow-Origin, there are libraries may used, but i think this enough for now
+// Solve Access-Control-Allow-Origin, there are libraries (cors)  may used, but i think this enough for now
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
@@ -48,13 +42,13 @@ app.use((req, res, next) => {
   next();
 });
 
+//ROUTES
 app.use("/", filesRouter);
-
 app.use("/", rawDataRouter);
 
 // How I will  handle data diversity?
 
-// Problem
+// THE PROBLEM
 
 // No fixed schemas
 // No fixed columns
@@ -86,29 +80,16 @@ app.use("/", rawDataRouter);
 //		- logically end date after start date, but we will assume we have wrong entry. So, I will  
 //		- get the Average of difference between two columns
 //		
-//		-
-//		-
-//		-
-//		-
-//		-
-//		-
-//		-
-//		-
-//		-
-//		-
-//		-
-//		-
-//		-
-//		-
-// Save data imported from csv files. Why? logging, start analyzing data from this point
+
+
 const port = process.env.PORT || 3002;
 
 app.listen(port, () => {
   console.log("server started ...");
 });
 
-// app.all("*", (req, res, next) => {
-//   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
-// });
-
+app.all("*", (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+ 
 module.exports = app;
