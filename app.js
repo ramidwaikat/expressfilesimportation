@@ -14,7 +14,6 @@ const AppError = require('./utils/appError');
 
 // MIDDLEWARES
 
-// 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -41,6 +40,7 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
+
 
 //ROUTES
 app.use("/", filesRouter);
@@ -80,7 +80,7 @@ app.use("/", rawDataRouter);
 //		- logically end date after start date, but we will assume we have wrong entry. So, I will  
 //		- get the Average of difference between two columns
 //		
-
+ 
 
 const port = process.env.PORT || 3002;
 
